@@ -109,7 +109,7 @@ def load_data() -> pd.DataFrame:
 
 
 @st.cache_data(show_spinner="Calculando señales de riesgo y anomalías…")
-def enrich(df: pd.DataFrame) -> pd.DataFrame:
+def enrich(_df: pd.DataFrame) -> pd.DataFrame:
     """
     Añade, sobre TODO el dataset (umbrales relativos al universo completo):
       - duracion_dias, es_directa, Rango Valor
@@ -117,7 +117,7 @@ def enrich(df: pd.DataFrame) -> pd.DataFrame:
       - Isolation Forest: es_anomalo, anomaly_score
     Se calcula una sola vez; los filtros solo eligen qué mostrar.
     """
-    d = df.copy()
+    d = _df.copy()
 
     # --- Variables derivadas -------------------------------------------------
     d["duracion_dias"] = (
@@ -315,7 +315,7 @@ with tab_pan:
             fig.update_layout(title="Entidades que más contratan (por monto)",
                               xaxis_title="Mil millones COP")
             fig.update_yaxes(autorange="reversed")
-            st.plotly_chart(plotly_base(fig), use_container_width=True)
+            st.plotly_chart(plotly_base(fig), width='stretch')
 
         # 2) Distribución por modalidad (dona)
         with c2:
@@ -331,7 +331,7 @@ with tab_pan:
                 hovertemplate="%{label}<br>%{value:,} contratos (%{percent})<extra></extra>",
             ))
             fig.update_layout(title="Distribución por modalidad")
-            st.plotly_chart(plotly_base(fig), use_container_width=True)
+            st.plotly_chart(plotly_base(fig), width='stretch')
 
         c3, c4 = st.columns(2)
 
@@ -348,7 +348,7 @@ with tab_pan:
             ))
             fig.update_layout(title="Evolución del valor contratado por año",
                               yaxis_title="Mil millones COP")
-            st.plotly_chart(plotly_base(fig), use_container_width=True)
+            st.plotly_chart(plotly_base(fig), width='stretch')
 
         # 4) Valor mediano por modalidad (robusto)
         with c4:
@@ -366,7 +366,7 @@ with tab_pan:
             fig.update_layout(title="Valor mediano por modalidad (top 6)",
                               yaxis_title="Millones COP")
             fig.update_xaxes(tickangle=-20)
-            st.plotly_chart(plotly_base(fig), use_container_width=True)
+            st.plotly_chart(plotly_base(fig), width='stretch')
 
         c5, c6 = st.columns(2)
 
@@ -383,7 +383,7 @@ with tab_pan:
                         marker_color=MORADO)
             fig.update_layout(title="Acceso Pyme por rango de valor", barmode="stack",
                               yaxis_title="% de contratos", yaxis_range=[0, 100])
-            st.plotly_chart(plotly_base(fig), use_container_width=True)
+            st.plotly_chart(plotly_base(fig), width='stretch')
 
         # 6) Concentración de proveedores (Pareto)
         with c6:
@@ -407,7 +407,7 @@ with tab_pan:
                             range=[0, 105], showgrid=False),
             )
             fig.update_xaxes(tickangle=-25)
-            st.plotly_chart(plotly_base(fig), use_container_width=True)
+            st.plotly_chart(plotly_base(fig), width='stretch')
             top6 = pct.head(6).sum()
             st.caption(f"Los 6 mayores proveedores concentran el **{top6:.0f}%** del monto (vista actual).")
 
@@ -440,7 +440,7 @@ with tab_prio:
                       "Dias adicionados", "Modalidad de Contratacion", "Riesgo"]].copy()
     vista_r["Valor del Contrato"] = vista_r["Valor del Contrato"].apply(fmt_cop)
     vista_r["Dias adicionados"] = ("+" + vista_r["Dias adicionados"].fillna(0).astype(int).astype(str) + " d")
-    st.dataframe(vista_r.head(50), use_container_width=True, hide_index=True)
+    st.dataframe(vista_r.head(50), width='stretch', hide_index=True)
     st.caption(f"{len(reglas):,} contratos con 2+ señales · "
                f"{int((f['senales'] == 3).sum()):,} críticos (3 señales) en la vista.")
 
@@ -457,7 +457,7 @@ with tab_prio:
     vista_a["Dias adicionados"] = vista_a["Dias adicionados"].fillna(0).astype(int)
     vista_a = vista_a.rename(columns={"anomaly_score": "Atipicidad (más bajo = más atípico)"})
     vista_a["Atipicidad (más bajo = más atípico)"] = vista_a["Atipicidad (más bajo = más atípico)"].round(3)
-    st.dataframe(vista_a.head(50), use_container_width=True, hide_index=True)
+    st.dataframe(vista_a.head(50), width='stretch', hide_index=True)
 
     # Contraste modelo vs reglas
     st.markdown("---")
