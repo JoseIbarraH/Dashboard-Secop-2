@@ -348,9 +348,11 @@ def lectura_pyme(f: pd.DataFrame) -> Lectura:
 
 def lectura_pareto(f: pd.DataFrame) -> Lectura:
     que_es = (
-        "Los diez proveedores —la empresa o persona que recibe el contrato— que más dinero "
-        "se llevaron, y qué porcentaje del total representa cada uno. Si las primeras barras "
-        "son muy largas, unas pocas empresas acaparan buena parte del presupuesto."
+        "Cada barra azul es un proveedor —la empresa o persona que recibió el contrato— y "
+        "muestra qué porcentaje del dinero total se llevó. La última, «Otros», junta a todos "
+        "los demás. La línea naranja va sumando esos porcentajes: si sube de golpe al "
+        "principio, unas pocas empresas acaparan casi todo; si sube despacio y la barra de "
+        "«Otros» es la más alta, el dinero está repartido entre muchísimas."
     )
     if len(f) == 0:
         return _vacia(que_es)
