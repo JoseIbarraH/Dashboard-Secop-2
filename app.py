@@ -80,7 +80,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
 # --------------------------------------------------------------------------- #
 # Utilidades
 # --------------------------------------------------------------------------- #
@@ -95,7 +94,6 @@ def fmt_cop(x: float) -> str:
     else:
         s = f"{x:,.0f}"
     return "$" + s.replace(".", ",")
-
 
 @st.cache_data(show_spinner="Cargando datos de contratación…")
 def load_data() -> pd.DataFrame:
@@ -523,3 +521,8 @@ st.caption(
     "Observatorio ciudadano de contratación pública de Cartagena · base metodológica. "
     "Datos: SECOP II (datos abiertos). Las anomalías son estadísticas, no determinaciones legales."
 )
+
+
+
+
+#Optimizado
