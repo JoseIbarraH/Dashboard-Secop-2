@@ -1,5 +1,12 @@
-streamlit>=1.30,<2
-pandas>=2.0
-pyarrow>=14
-scikit-learn>=1.3
-plotly>=5.18
+# Versiones fijadas para que el mismo commit produzca siempre el mismo entorno.
+# Para actualizar: sube los números, ejecuta `pytest` y prueba la app.
+#
+# streamlit >= 1.51 no es opcional: la interfaz usa `width="stretch"` en
+# st.plotly_chart, parámetro que no existe en versiones anteriores (en 1.50 y
+# anteriores la llamada falla con TypeError).
+streamlit==1.61.1
+pandas==3.0.5
+numpy==2.5.2
+pyarrow==24.0.0
+scikit-learn==1.9.0
+plotly==6.9.0
