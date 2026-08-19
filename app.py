@@ -530,31 +530,47 @@ with tab_pan:
         with c6:
             prov = (f.groupby("Proveedor Adjudicado", observed=True)["Valor del Contrato"]
                       .sum().sort_values(ascending=False))
-            total_prov = float(prov.sum())
-            # Antes esto era un Pareto con barra "Otros" y eje acumulado. Con casi
-            # treinta mil proveedores, "Otros" se llevaba el 87% y aplastaba a los
-            # demás: parecía que existiera una empresa llamada así. El eje doble,
-            # además, es de lo más difícil de leer para quien no hace esto a diario.
-            top = prov.head(10)
-            pct = (top / total_prov * 100) if total_prov else top * 0
-            fig = go.Figure(go.Bar(
-                x=pct.values, y=abreviar(pct.index, 34), orientation="h",
-                marker_color=AZUL,
-                text=[f"{v:.1f}%" for v in pct.values], textposition="outside",
-                customdata=list(pct.index.astype(str)),
-                hovertemplate="%{customdata}<br>%{x:.1f}% del monto<extra></extra>",
-                cliponaxis=False,
-            ))
-            fig.update_layout(title="Proveedores que más dinero reciben",
-                              xaxis_title="% del monto contratado", showlegend=False)
-            fig.update_yaxes(autorange="reversed")
-            fig.update_xaxes(range=[0, max(float(pct.max()) * 1.3, 1.0)])
-            st.plotly_chart(plotly_base(fig), width="stretch")
+            top = prov.head(6)
+            pareto = top
+            # Solo tiene sentido añadir "Otros" si de verdad quedan más proveedores.
+            if len(prov) > 6:
+                pareto = pd.concat([top, pd.Series({"Otros": prov.iloc[6:].sum()})])
+            pct = pareto / pareto.sum() * 100
+            pct_acum = pct.cumsum()
+            # `abreviar` en vez de un recorte simple: 761 de los 28.206 proveedores
+            # coinciden en sus primeros 18 caracteres, y Plotly fundiría en una
+            # sola barra a dos que se truncaran igual.
+            etiquetas = abreviar(pct.index, 18)
+            fig = go.Figure()
+            fig.add_bar(x=etiquetas, y=pct.values, marker_color=AZUL, name="% del monto",
+                        customdata=list(pct.index.astype(str)),
+                        hovertemplate="%{customdata}<br>%{y:.1f}% del monto<extra></extra>")
+            fig.add_trace(go.Scatter(x=etiquetas, y=pct_acum.values, name="% acumulado",
+                                     mode="lines+markers", line=dict(color=NARANJA, width=2),
+                                     customdata=list(pct.index.astype(str)),
+                                     hovertemplate="%{customdata}<br>%{y:.1f}% acumulado<extra></extra>",
+                                     yaxis="y2"))
+            fig.update_layout(
+                title="Concentración de proveedores (Pareto)",
+                yaxis=dict(title="% del monto"),
+                yaxis2=dict(title="% acumulado", overlaying="y", side="right",
+                            range=[0, 105], showgrid=False),
+            )
+            fig.update_xaxes(tickangle=-25)
+            fig = plotly_base(fig)
+            # Este ajuste va DESPUÉS de plotly_base, que impone la leyenda al pie
+            # y un margen inferior mínimo. Aquí abajo van los nombres de los
+            # proveedores inclinados, así que la leyenda se sube al encabezado y
+            # se reserva sitio para ellos; de lo contrario se solapan.
+            fig.update_layout(
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0),
+                margin=dict(l=10, r=10, t=60, b=100),
+            )
+            st.plotly_chart(fig, width="stretch")
             n_top = min(6, len(prov))
-            concentracion = (prov.head(6).sum() / total_prov * 100) if total_prov else 0
             st.caption(
                 f"De **{pl.fmt_entero(len(prov))} proveedores** contratados, los {n_top} "
-                f"mayores concentran el **{concentracion:.0f}%** del monto (vista actual)."
+                f"mayores concentran el **{pct.head(6).sum():.0f}%** del monto (vista actual)."
             )
             guia(lc.lectura_pareto(f))
 
