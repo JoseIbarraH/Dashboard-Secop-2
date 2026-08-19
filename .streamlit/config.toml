@@ -1,0 +1,18 @@
+# La identidad visual del observatorio está diseñada sobre fondo claro: títulos
+# en azul tinta, tarjetas blancas, gráficas con fondo transparente. Sin fijar el
+# tema, Streamlit sigue la preferencia del sistema y quien tenga el modo oscuro
+# activado recibe el título en azul oscuro sobre negro, ilegible.
+[theme]
+base = "light"
+primaryColor = "#2f6fd1"          # el azul institucional, en vez del rojo por defecto
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f5f7fa"
+textColor = "#12233b"
+
+[client]
+# Es un sitio público: el visitante no necesita el menú de despliegue.
+toolbarMode = "minimal"
+showErrorDetails = "none"
+
+[browser]
+gatherUsageStats = false
