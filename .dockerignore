@@ -1,0 +1,12 @@
+.git
+.github
+.gitignore
+.pytest_cache
+__pycache__
+*.py[cod]
+.venv
+venv
+tests
+README.md
+DESPLIEGUE_DOKPLOY.md
+requirements-dev.txt
